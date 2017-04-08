@@ -31,6 +31,9 @@
 /** 下载完成保存的文件路径 */
 @property(nonatomic, copy) NSString *cacheFilePath;
 
+/** 输出流 */
+@property(nonatomic, strong) NSOutputStream *outputStream;
+
 @end
 
 @implementation WJDownloader
@@ -123,6 +126,7 @@
     // 5.2 判断
     // 缓存大小 == 文件总大小 --> 下载完毕、取消请求 --> 移动文件到 cache 目录
     if (_totalFileSize == _tmpFileSize) {
+        NSLog(@"本地已经存在该文件");
         // 移动tmp临时缓存的文件 -> 下载完成的路径cache
         [WJDownloaderFileTool wj_moveFile:self.tmpFilePath toPath:self.cacheFilePath];
         // 取消请求
@@ -144,13 +148,39 @@
     // 缓存大小 < 文件总大小  --> 继续下载
     // 继续允许接受数据
     NSLog(@"继续接收数据");
+    // 打开输出流
+    self.outputStream = [NSOutputStream outputStreamToFileAtPath:self.tmpFilePath append:YES];
+    [self.outputStream open];
+    
     completionHandler(NSURLSessionResponseAllow);
 }
 
 
+
+/**
+ 接收数据的时候调用
+ */
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
     NSLog(@"接收数据中");
+    
+    // 写入数据
+    [self.outputStream write:data.bytes maxLength:data.length];
+    
 }
 
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error{
+    // 关闭流
+    [self.outputStream close];
+    self.outputStream = nil;
+    
+    if (error == nil) {
+        NSLog(@"下载完毕");
+        // 移动数据
+        [WJDownloaderFileTool wj_moveFile:self.tmpFilePath toPath:self.cacheFilePath];
+    } else {
+        NSLog(@"有错误, 请检查 URL 地址等是否有误");
+    }
+}
 
 @end
