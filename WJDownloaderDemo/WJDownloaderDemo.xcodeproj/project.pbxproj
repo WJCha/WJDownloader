@@ -13,6 +13,9 @@
 		DFD714D31E9927E60084ACEF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DFD714D11E9927E60084ACEF /* Main.storyboard */; };
 		DFD714D51E9927E60084ACEF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DFD714D41E9927E60084ACEF /* Assets.xcassets */; };
 		DFD714D81E9927E60084ACEF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DFD714D61E9927E60084ACEF /* LaunchScreen.storyboard */; };
+		DFD714E21E9929560084ACEF /* WJDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = DFD714E11E9929560084ACEF /* WJDownloader.m */; };
+		DFD714E81E9931550084ACEF /* WJDownloaderFileTool.m in Sources */ = {isa = PBXBuildFile; fileRef = DFD714E71E9931550084ACEF /* WJDownloaderFileTool.m */; };
+		DFD714EE1E9937740084ACEF /* NSString+WJURLMd5.m in Sources */ = {isa = PBXBuildFile; fileRef = DFD714ED1E9937740084ACEF /* NSString+WJURLMd5.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +29,12 @@
 		DFD714D41E9927E60084ACEF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DFD714D71E9927E60084ACEF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DFD714D91E9927E60084ACEF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DFD714E01E9929560084ACEF /* WJDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WJDownloader.h; sourceTree = "<group>"; };
+		DFD714E11E9929560084ACEF /* WJDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WJDownloader.m; sourceTree = "<group>"; };
+		DFD714E61E9931550084ACEF /* WJDownloaderFileTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WJDownloaderFileTool.h; sourceTree = "<group>"; };
+		DFD714E71E9931550084ACEF /* WJDownloaderFileTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WJDownloaderFileTool.m; sourceTree = "<group>"; };
+		DFD714EC1E9937740084ACEF /* NSString+WJURLMd5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+WJURLMd5.h"; sourceTree = "<group>"; };
+		DFD714ED1E9937740084ACEF /* NSString+WJURLMd5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+WJURLMd5.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +67,7 @@
 		DFD714C71E9927E60084ACEF /* WJDownloaderDemo */ = {
 			isa = PBXGroup;
 			children = (
+				DFD714DF1E9928B00084ACEF /* WJDownloader */,
 				DFD714CB1E9927E60084ACEF /* AppDelegate.h */,
 				DFD714CC1E9927E60084ACEF /* AppDelegate.m */,
 				DFD714CE1E9927E60084ACEF /* ViewController.h */,
@@ -77,6 +87,19 @@
 				DFD714C91E9927E60084ACEF /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		DFD714DF1E9928B00084ACEF /* WJDownloader */ = {
+			isa = PBXGroup;
+			children = (
+				DFD714E01E9929560084ACEF /* WJDownloader.h */,
+				DFD714E11E9929560084ACEF /* WJDownloader.m */,
+				DFD714E61E9931550084ACEF /* WJDownloaderFileTool.h */,
+				DFD714E71E9931550084ACEF /* WJDownloaderFileTool.m */,
+				DFD714EC1E9937740084ACEF /* NSString+WJURLMd5.h */,
+				DFD714ED1E9937740084ACEF /* NSString+WJURLMd5.m */,
+			);
+			path = WJDownloader;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -153,8 +176,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				DFD714D01E9927E60084ACEF /* ViewController.m in Sources */,
+				DFD714E21E9929560084ACEF /* WJDownloader.m in Sources */,
 				DFD714CD1E9927E60084ACEF /* AppDelegate.m in Sources */,
+				DFD714EE1E9937740084ACEF /* NSString+WJURLMd5.m in Sources */,
 				DFD714CA1E9927E60084ACEF /* main.m in Sources */,
+				DFD714E81E9931550084ACEF /* WJDownloaderFileTool.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

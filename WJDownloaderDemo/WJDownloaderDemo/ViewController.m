@@ -7,22 +7,28 @@
 //
 
 #import "ViewController.h"
+#import "WJDownloader.h"
 
 @interface ViewController ()
+
+@property (nonatomic, strong) WJDownloader *downLoader;
 
 @end
 
 @implementation ViewController
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+- (WJDownloader *)downLoader {
+    if (!_downLoader) {
+        _downLoader = [[WJDownloader alloc] init];
+    }
+    return _downLoader;
 }
 
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    NSURL *url = [NSURL URLWithString:@"http://free2.macx.cn:8281/tools/photo/SnapNDragPro418.dmg"];
+    [self.downLoader wj_downloadWithURL:url];
 }
 
 
