@@ -24,19 +24,24 @@
     long long _tmpFileSize;
 }
 
-/** session */
+/** 下载会话 */
 @property(nonatomic, strong) NSURLSession *session;
 /** 临时缓存文件路径 */
 @property(nonatomic, copy) NSString *tmpFilePath;
 /** 下载完成保存的文件路径 */
 @property(nonatomic, copy) NSString *cacheFilePath;
 
-/** 输出流 */
+/** 文件输出流 */
 @property(nonatomic, strong) NSOutputStream *outputStream;
+
+/** 下载任务 */
+@property (nonatomic, weak) NSURLSessionDataTask *task;
 
 @end
 
 @implementation WJDownloader
+
+#pragma mark - 懒加载
 
 - (NSURLSession *)session{
     if (!_session) {
@@ -45,6 +50,9 @@
     return _session;
 }
 
+
+
+#pragma mark - 方法
 
 - (void)wj_downloadWithURL:(NSURL *)url{
 
@@ -64,7 +72,7 @@
         return;
     }
     
-    // 3. 下载过程中读取本地缓存文件的大小
+    // 3. 读取本地缓存文件的大小
     _tmpFileSize = [WJDownloaderFileTool wj_fileSizeWithPath:self.tmpFilePath];
     NSLog(@"%zd", _tmpFileSize);
     // 4. 根据缓存大小开始相应的下载网络请求
@@ -83,10 +91,28 @@
     [request setValue:range forHTTPHeaderField:@"Range"];
     
     NSURLSessionDataTask *task = [self.session dataTaskWithRequest:request];
+    self.task = task;
     [task resume];
     
 }
 
+
+- (void)wj_resume{
+    [self.task resume];
+}
+
+// 存在连续点击暂停了几次, 需要点击resume几次, 才可以恢复下载的 BUG，需要加入状态控制解决。
+- (void)wj_pause{
+    [self.task suspend];
+}
+
+- (void)wj_cancel{
+    [self.session invalidateAndCancel];
+    self.session = nil;
+    // 删除缓存
+    [WJDownloaderFileTool wj_removeFilePath:self.tmpFilePath];
+    
+}
 
 #pragma mark - NSURLSessionDataDelegate
 /**
@@ -96,19 +122,28 @@
  */
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler{
     
+    
     /*
-    NSLog(@"%@", response);
+     NSLog(@"%@", response);
      
-    <NSHTTPURLResponse: 0x60000003af60> { URL: http://free2.macx.cn:8281/tools/photo/SnapNDragPro418.dmg } { status code: 206, headers {
-        "Accept-Ranges" = bytes;
-        "Content-Length" = 11;
-        "Content-Range" = "bytes 0-10/11";
-        "Content-Type" = "text/html";
-        Date = "Sat, 08 Apr 2017 15:51:14 GMT";
-        Etag = "\"1063451cdf48cf1:0\"";
-        "Last-Modified" = "Wed, 26 Mar 2014 10:35:30 GMT";
-        Server = "Microsoft-IIS/7.5";
-    } }
+     <NSHTTPURLResponse: 0x608000427480> { URL: http://sw.bos.baidu.com/sw-search-sp/software/353374073d79e/googlechrome_mac_55.0.2883.95.dmg } { status code: 206, headers {
+     "Accept-Ranges" = bytes;
+     Age = 256401;
+     Connection = close;
+     "Content-Length" = 63476797;
+     "Content-MD5" = "dZ7yVh52NqxeHR/7wdzQpQ==";
+     "Content-Range" = "bytes 0-63476796/63476797";
+     "Content-Type" = "application/octet-stream";
+     Date = "Sun, 09 Apr 2017 03:25:54 GMT";
+     Etag = "\"759ef2561e7636ac5e1d1ffbc1dcd0a5\"";
+     Expires = "Sun, 09 Apr 2017 04:03:57 GMT";
+     "Last-Modified" = "Tue, 03 Jan 2017 02:45:36 GMT";
+     "Ohc-Response-Time" = "1 0 0 0 0 0";
+     Server = "JSP3/2.0.14";
+     "x-bce-debug-id" = "MTAuMTkzLjM0LjE3OlR1ZSwgMDMgSmFuIDIwMTcgMTA6NDk6MDYgQ1NUOjI5NDYzNDM5OA==";
+     "x-bce-request-id" = "1b1db9c1-0b38-49c5-99cc-3b8b3ee238ac";
+     } }
+     
      */
     
     // 类型转换
@@ -179,7 +214,7 @@
         // 移动数据
         [WJDownloaderFileTool wj_moveFile:self.tmpFilePath toPath:self.cacheFilePath];
     } else {
-        NSLog(@"有错误, 请检查 URL 地址等是否有误");
+        NSLog(@"下载任务被取消或者有错误, 请检查 URL 地址等是否有误");
     }
 }
 

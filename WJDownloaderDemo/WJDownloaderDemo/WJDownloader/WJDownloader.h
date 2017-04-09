@@ -18,4 +18,22 @@
  */
 - (void)wj_downloadWithURL:(NSURL *)url;
 
+
+/**
+ 继续下载
+ */
+- (void)wj_resume;
+
+
+/**
+ 暂停任务， 可以恢复，缓存没有删除
+ */
+- (void)wj_pause;
+
+
+/**
+  取消下载，缓存会删除
+ */
+- (void)wj_cancel;
+
 @end
