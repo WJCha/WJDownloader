@@ -16,6 +16,7 @@
 		DFD714E21E9929560084ACEF /* WJDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = DFD714E11E9929560084ACEF /* WJDownloader.m */; };
 		DFD714E81E9931550084ACEF /* WJDownloaderFileTool.m in Sources */ = {isa = PBXBuildFile; fileRef = DFD714E71E9931550084ACEF /* WJDownloaderFileTool.m */; };
 		DFD714EE1E9937740084ACEF /* NSString+WJURLMd5.m in Sources */ = {isa = PBXBuildFile; fileRef = DFD714ED1E9937740084ACEF /* NSString+WJURLMd5.m */; };
+		DFD976641E9A7D30007E6595 /* WJDownloaderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DFD976631E9A7D30007E6595 /* WJDownloaderManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,8 @@
 		DFD714E71E9931550084ACEF /* WJDownloaderFileTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WJDownloaderFileTool.m; sourceTree = "<group>"; };
 		DFD714EC1E9937740084ACEF /* NSString+WJURLMd5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+WJURLMd5.h"; sourceTree = "<group>"; };
 		DFD714ED1E9937740084ACEF /* NSString+WJURLMd5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+WJURLMd5.m"; sourceTree = "<group>"; };
+		DFD976621E9A7D30007E6595 /* WJDownloaderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WJDownloaderManager.h; sourceTree = "<group>"; };
+		DFD976631E9A7D30007E6595 /* WJDownloaderManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WJDownloaderManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +95,8 @@
 		DFD714DF1E9928B00084ACEF /* WJDownloader */ = {
 			isa = PBXGroup;
 			children = (
+				DFD976621E9A7D30007E6595 /* WJDownloaderManager.h */,
+				DFD976631E9A7D30007E6595 /* WJDownloaderManager.m */,
 				DFD714E01E9929560084ACEF /* WJDownloader.h */,
 				DFD714E11E9929560084ACEF /* WJDownloader.m */,
 				DFD714E61E9931550084ACEF /* WJDownloaderFileTool.h */,
@@ -177,6 +182,7 @@
 			files = (
 				DFD714D01E9927E60084ACEF /* ViewController.m in Sources */,
 				DFD714E21E9929560084ACEF /* WJDownloader.m in Sources */,
+				DFD976641E9A7D30007E6595 /* WJDownloaderManager.m in Sources */,
 				DFD714CD1E9927E60084ACEF /* AppDelegate.m in Sources */,
 				DFD714EE1E9937740084ACEF /* NSString+WJURLMd5.m in Sources */,
 				DFD714CA1E9927E60084ACEF /* main.m in Sources */,
@@ -337,6 +343,7 @@
 				DFD714DE1E9927E60084ACEF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
