@@ -13,6 +13,11 @@
 
 @property (nonatomic, strong) WJDownloader *downLoader;
 
+/**
+ *  NSTimer
+ */
+@property(nonatomic, weak) NSTimer *timer;
+
 @end
 
 @implementation ViewController
@@ -24,8 +29,18 @@
     return _downLoader;
 }
 
+- (NSTimer *)timer{
+    if (!_timer) {
+        NSTimer *timer = [NSTimer timerWithTimeInterval:1 target:self selector:@selector(update) userInfo:nil repeats:YES];
+        [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
+        _timer = timer;
+    }
+    return _timer;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self timer];
 
 }
 
@@ -44,7 +59,11 @@
     [self.downLoader wj_cancel];
 }
 
+- (void)update {
 
+    NSLog(@"%zd", self.downLoader.state);
+
+}
 
 
 

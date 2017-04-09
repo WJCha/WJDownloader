@@ -69,8 +69,24 @@
     // 2. 判断本地有没有存在已经下载好的文件，如果有，return
     if ([WJDownloaderFileTool wj_isFileExists:self.cacheFilePath]) {
         NSLog(@"文件已经下载完毕, 直接返回相应的数据--文件的具体路径, 文件的大小等信息即可");
+        self.state = kWJDownloaderStateSuccess;
         return;
     }
+    
+    
+    // 判断如果当前任务不存在(当前 URL 是否有在下载任务中)
+    if ([url isEqual:self.task.originalRequest.URL]) {
+        // 任务已经存在
+        if (self.state == kWJDownloaderStateDownloading) return;
+        if (self.state == kWJDownloaderStatePause) {
+            [self wj_resume];
+            return;
+        }
+    }
+    
+    // 下载任务不存在（URL 不一样），先取消任务再添加比较好
+    [self wj_cancel];
+    
     
     // 3. 读取本地缓存文件的大小
     _tmpFileSize = [WJDownloaderFileTool wj_fileSizeWithPath:self.tmpFilePath];
@@ -98,20 +114,45 @@
 
 
 - (void)wj_resume{
-    [self.task resume];
+    
+    if (self.state == kWJDownloaderStatePause) {
+        [self.task resume];
+        self.state = kWJDownloaderStateDownloading;
+    }
+    
+    
 }
 
-// 存在连续点击暂停了几次, 需要点击resume几次, 才可以恢复下载的 BUG，需要加入状态控制解决。
 - (void)wj_pause{
-    [self.task suspend];
+    
+    if (self.state == kWJDownloaderStateDownloading) {
+        [self.task suspend];
+        self.state = kWJDownloaderStatePause;
+    }
+    
+    
 }
 
+
+
+/**
+ 取消任务，不删除缓存
+ */
 - (void)wj_cancel{
     [self.session invalidateAndCancel];
     self.session = nil;
+    
+    self.state = kWJDownloaderStateFailed;
+
+}
+
+/**
+ 取消任务，删除缓存
+ */
+- (void)wj_cancelAndClearCache{
+    [self wj_cancel];
     // 删除缓存
     [WJDownloaderFileTool wj_removeFilePath:self.tmpFilePath];
-    
 }
 
 #pragma mark - NSURLSessionDataDelegate
@@ -164,6 +205,8 @@
         NSLog(@"本地已经存在该文件");
         // 移动tmp临时缓存的文件 -> 下载完成的路径cache
         [WJDownloaderFileTool wj_moveFile:self.tmpFilePath toPath:self.cacheFilePath];
+        // 状态为下载成功
+        self.state = kWJDownloaderStateSuccess;
         // 取消请求
         completionHandler(NSURLSessionResponseCancel);
         return;
@@ -183,6 +226,7 @@
     // 缓存大小 < 文件总大小  --> 继续下载
     // 继续允许接受数据
     NSLog(@"继续接收数据");
+    self.state = kWJDownloaderStateDownloading;
     // 打开输出流
     self.outputStream = [NSOutputStream outputStreamToFileAtPath:self.tmpFilePath append:YES];
     [self.outputStream open];
@@ -211,10 +255,12 @@
     
     if (error == nil) {
         NSLog(@"下载完毕");
+        self.state = kWJDownloaderStateSuccess;
         // 移动数据
         [WJDownloaderFileTool wj_moveFile:self.tmpFilePath toPath:self.cacheFilePath];
     } else {
         NSLog(@"下载任务被取消或者有错误, 请检查 URL 地址等是否有误");
+        self.state = kWJDownloaderStateFailed;
     }
 }
 
