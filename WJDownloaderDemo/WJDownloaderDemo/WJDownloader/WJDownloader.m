@@ -37,6 +37,10 @@
 /** 下载任务 */
 @property (nonatomic, weak) NSURLSessionDataTask *task;
 
+
+@property(nonatomic, copy) void(^successBlock)(double progress, long long fileSize, NSString *filePath);
+@property(nonatomic, copy) void(^failureBlock)(NSError *error);
+
 @end
 
 @implementation WJDownloader
@@ -52,7 +56,15 @@
 
 
 
-#pragma mark - 方法
+#pragma mark - 接口
+
+
+
+- (void)wj_downloadWithURL:(NSURL *)url success:(void(^)(double progress, long long fileSize, NSString *filePath))success failure:(void(^)(NSError *error))failure{
+    self.successBlock = success;
+    self.failureBlock = failure;
+    [self wj_downloadWithURL:url];
+}
 
 - (void)wj_downloadWithURL:(NSURL *)url{
 
@@ -69,7 +81,23 @@
     // 2. 判断本地有没有存在已经下载好的文件，如果有，return
     if ([WJDownloaderFileTool wj_isFileExists:self.cacheFilePath]) {
         NSLog(@"文件已经下载完毕, 直接返回相应的数据--文件的具体路径, 文件的大小等信息即可");
+        
+        // 返回文件信息
+        if (self.downloadFileSize) {
+            self.downloadFileSize([WJDownloaderFileTool wj_fileSizeWithPath:self.cacheFilePath]);
+        }
+        
         self.state = kWJDownloaderStateSuccess;
+        
+        if (self.downloadSuccessFilePath) {
+            self.downloadSuccessFilePath(self.cacheFilePath);
+        }
+        
+        
+        if (self.successBlock) {
+            self.successBlock(1.0, [WJDownloaderFileTool wj_fileSizeWithPath:self.cacheFilePath], self.cacheFilePath);
+        }
+        
         return;
     }
     
@@ -155,6 +183,32 @@
     [WJDownloaderFileTool wj_removeFilePath:self.tmpFilePath];
 }
 
+
+- (void)setProgress:(double)progress{
+    _progress = progress;
+    
+    if (self.downloadProgress) {
+        self.downloadProgress(progress);
+    }
+    
+    if (self.successBlock) {
+        self.successBlock(progress, _totalFileSize, self.cacheFilePath);
+    }
+    
+}
+
+
+- (void)setState:(WJDownloaderState)state{
+    if (_state == state) return;
+    
+    _state = state;
+    
+    if (self.downloadStateChange) {
+        self.downloadStateChange(state);
+    }
+}
+
+
 #pragma mark - NSURLSessionDataDelegate
 /**
  当发送请求, 第一次接受到响应的时候调用
@@ -199,6 +253,12 @@
         _totalFileSize = [[rangeStr componentsSeparatedByString:@"/"].lastObject longLongValue];
     }
     
+    
+    // 返回文件总大小
+    if (self.downloadFileSize) {
+        self.downloadFileSize(_totalFileSize);
+    }
+    
     // 5.2 判断
     // 缓存大小 == 文件总大小 --> 下载完毕、取消请求 --> 移动文件到 cache 目录
     if (_totalFileSize == _tmpFileSize) {
@@ -240,7 +300,12 @@
  接收数据的时候调用
  */
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
-    NSLog(@"接收数据中");
+    
+    // 下载进度
+    _tmpFileSize += data.length;
+    self.progress = 1.0 * _tmpFileSize / _totalFileSize;
+//    NSLog(@"%lf", self.progress);
+    
     
     // 写入数据
     [self.outputStream write:data.bytes maxLength:data.length];
@@ -258,9 +323,22 @@
         self.state = kWJDownloaderStateSuccess;
         // 移动数据
         [WJDownloaderFileTool wj_moveFile:self.tmpFilePath toPath:self.cacheFilePath];
+        
+        if (self.downloadSuccessFilePath) {
+            self.downloadSuccessFilePath(self.cacheFilePath);
+        }
+        
     } else {
         NSLog(@"下载任务被取消或者有错误, 请检查 URL 地址等是否有误");
         self.state = kWJDownloaderStateFailed;
+        
+        if (self.downloadError) {
+            self.downloadError(error);
+        }
+        
+        if (self.failureBlock) {
+            self.failureBlock(error);
+        }
     }
 }
 

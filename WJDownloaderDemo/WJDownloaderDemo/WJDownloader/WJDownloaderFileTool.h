@@ -20,6 +20,8 @@
 + (BOOL)wj_isFileExists:(NSString *)filePath;
 
 
+
+
 /**
  返回当前文件大小
 
